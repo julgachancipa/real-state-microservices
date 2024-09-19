@@ -1,4 +1,4 @@
-from api.endpoints import properties
+from api.endpoints import re_property
 from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -13,6 +13,6 @@ app.add_middleware(
 
 router = APIRouter()
 
-router.include_router(properties.router, tags=["properties"])
+router.include_router(re_property.router, tags=["properties"])
 
 app.include_router(router)
