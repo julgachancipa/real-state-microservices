@@ -15,3 +15,5 @@ class Settings(BaseSettings):
     DB_URI: str = (
         f"mysql+mysqlconnector://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DBNAME}"
     )
+
+    VALID_STATUSES: list = ["pre_venta", "en_venta", "vendido"]
