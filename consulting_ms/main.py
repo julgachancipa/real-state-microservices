@@ -1,8 +1,11 @@
 import uvicorn
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Response
+from fastapi.exceptions import ResponseValidationError
+from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from api.endpoints import re_property
+from api.schemas.re_property import MultiStatusResponse
 
 app = FastAPI(title="Habi: Consulting properties API")
 app.add_middleware(
@@ -12,6 +15,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(ResponseValidationError)
+def validation_exception_handler(response: Response, exc: ResponseValidationError):
+    response_data = MultiStatusResponse(
+        detail=exc.errors(),
+        body=exc.body,
+    )
+
+    return JSONResponse(
+        status_code=207,
+        content=response_data.model_dump(),
+    )
+
 
 router = APIRouter()
 
