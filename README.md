@@ -7,40 +7,31 @@ Este proyecto consiste en el desarrollo de dos microservicios que permitirán a 
 ## Tecnologías Utilizadas
 
 - **Lenguaje**: Python
-- **Framework**: Flask o FastAPI para la creación de los microservicios.
-- **Base de Datos**: PostgreSQL
-- **ORM**: SQLAlchemy (en caso de usar Flask) o Tortoise ORM (en caso de usar FastAPI).
-- **Autenticación**: JWT (JSON Web Tokens) para la autenticación de usuarios.
-- **Documentación de API**: Swagger o ReDoc integrado con la herramienta seleccionada.
+- **Framework**: FastAPI para la creación de los microservicios.
+- **Base de Datos**: MySQL
+- **ORM**: No aplica para el caso, se definen directamente las querys de SQL.
+- **Autenticación**: No implementada
+- **Documentación de API**: Swagger
 - **Pruebas Unitarias**: Pytest para las pruebas unitarias.
-- **Versionamiento**: Git
+- **Versionamiento**: Git / GitHub
 
 ## Estructura del Proyecto
 
-real-state-microservices
-│
-├── consulta_servicio/
-│   ├── app.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── routes.py
-│   ├── db/
-│   │   └── database.py
-│   └── tests/
-│       └── test_routes.py
-│
-├── me_gusta_servicio/
-│   ├── app.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── routes.py
-│   └── tests/
-│       └── test_routes.py
-│
-├── README.md
-└── requirements.txt
-
-
+```
+real-state-microservices  
+    ├── api                     # API routes and request/response models are defined.
+    │   ├── endpoints           # Contains the API route definitions.
+    │   └── schemas             # Contains data validation and serialization schemas.
+    ├── controllers             # Holds the business logic for handling requests.
+    ├── infrastructure          # Contains modules related to the lower-level infrastructure of the project, such as database connections, external services, or any other resources the application interacts with.
+    │   └── sql                 # Contains SQL queries, migrations, or raw SQL files used for database interactions.
+    │       └── repositories    # Contains the repository layer, which abstracts the database operations.
+    ├── main.py                 # The entry point of the application.
+    ├── requirements.txt        # A text file listing all the Python dependencies required for the project.
+    ├── settings.py             # Configuration file for the project.
+    ├── tests.py             # Test cases
+    └── README.md               # The main documentation file for the project.
+```
 ## Historias de Usuario
 
 ### Servicio de Consulta
@@ -63,46 +54,44 @@ real-state-microservices
 1. Los usuarios pueden darle "me gusta" a un inmueble en específico y esto debe quedar registrado en la base de datos.
 2. Los "me gusta" son de usuarios registrados, y debe quedar registrado en la base de datos el histórico de “me gusta” de cada usuario y a cuáles inmuebles.
 
-## Instrucciones para la Prueba Técnica
-
-1. El código debe quedar almacenado en un repositorio de Git.
-2. Como tu primer commit, incluye este README detallando las tecnologías que vas a utilizar y cómo vas a abordar el desarrollo.
-3. Si tienes dudas, escríbelas en este README y resuélvelas tú mismo, junto con la razón de por qué las resolviste de esa manera.
-4. En el correo que recibiste la prueba deben estar las credenciales de acceso para conectarse a la base de datos.
-5. El primer requerimiento (Servicio de consulta) es práctico, por lo tanto, se espera el código funcional.
-6. Para el primer requerimiento, crear un archivo JSON con los datos que esperas que lleguen del front con los filtros solicitados por el usuario.
-7. El estado actual de un inmueble es el último estado insertado en la tabla `status_history` para dicho inmueble.
-8. No se espera que modifiques ningún registro en la base de datos, pero si necesitas una mayor cantidad de registros, puedes agregar nuevos.
-9. La información de otros registros puede que tenga inconsistencias, recuerda manejar esas excepciones.
-10. El segundo requerimiento (Servicio de “Me gusta”) es conceptual. No existe el modelo en la base de datos para soportar esta información.
-11. Para el segundo requerimiento se espera que extiendas el modelo con un diagrama de Entidad-Relación para soportar esta información. No se espera código, sino el diagrama y el SQL para extender el modelo.
-12. Tu código debe tener pruebas unitarias.
-13. Recuerda divertirte haciendo este reto, si tienes bloqueos, continúa con otra parte.
-14. Al terminar la prueba, responde al mismo correo desde el cual se te envió la prueba con el enlace al repositorio.
-
 ## Diagrama de Entidad-Relación (Segundo Requerimiento)
 
-Agrega aquí el diagrama de Entidad-Relación propuesto, describiendo cómo has extendido el modelo para soportar la funcionalidad de "me gusta".
+Para extender el diagrama de Entidad-Relación original, se propone agregar la tabla `interaction`, esta almacenará las reacciones de los usuarios (me gusta) a las propiedades inmobiliarias permitiendo hacer seguimiento de sus preferencias.
+
+![ER Diagram](./habi_ER.png)
+
+### Estructura de la tabla: `interaction`
+
+- `id` (INT, Primary Key, Auto-incremental): Un identificador único para cada registro de interacción.
+- `property_id` (INT, Foreign Key): Hace referencia a la propiedad que ha sido marcada con "me gusta".
+- `user_id` (INT, Foreign Key): Hace referencia al usuario que marcó "me gusta" en la propiedad.
+- `interaction_type` (VARCHAR): Para almacenar el tipo de interacción (por ejemplo, 'me gusta', 'no me gusta', etc.). Esto es útil si se planea añadir más tipos de interacciones en el futuro.
+- `created_at` (TIMESTAMP): La fecha y hora en que se realizó la interacción.
 
 ### Código SQL para Extender el Modelo
 
-Incluye aquí el código SQL necesario para implementar la extensión del modelo.
+```SQL
+CREATE TABLE interaction (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    user_id INT NOT NULL,
+    interaction_type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES property(property_id),
+    FOREIGN KEY (user_id) REFERENCES auth_user(user_id),
+    UNIQUE (property_id, user_id)  -- To ensure a user can like a property only once
+);
+
+```
+
+
 
 ## Preguntas y Resoluciones
 
-1. **Duda**: ¿Debo utilizar JWT para la autenticación de usuarios?
-   - **Respuesta**: Sí, es recomendable utilizar JWT para manejar la autenticación de usuarios de manera segura.
-   
-2. **Duda**: ¿Cómo manejar los estados de los inmuebles?
-   - **Respuesta**: Utilizaré la tabla `status_history` para obtener el estado más reciente de cada inmueble y solo mostraré los inmuebles con los estados `pre_venta`, `en_venta` o `vendido`.
+2. **Duda**: ¿Qué pasa si hay un resultado de las propiedades con registros incompletos?
 
-## Requerimientos no Funcionales
+Se devolverá una respuesta parcial con status code `207`, además se indicará qué información de los registros tiene datos incompletos.
 
-- Código fácil de mantener, leer y autodocumentado.
-- Seguir la guía de estilos PEP8 para Python.
-- Microservicios construidos para ser consumidos en una arquitectura REST.
+1. **Duda**: ¿Debo crear una nueva tabla para almacenar los "me gusta" o puedo agregar una nueva columna a la tabla propiedades para almacenar el número total de "me gusta"?
 
-## Puntos Extra
-
-- Hacer las pruebas unitarias usando TDD (Test-Driven Development).
-- Proponer un mejor modelo de la estructura actual de base de datos con el objetivo de mejorar la velocidad de las consultas, proporcionando un diagrama y la explicación de por qué lo modelaste de esa forma.
+Se decidió plantear la creación de la tabla `interaction` ya que nos permite identificar qué usuarios estan relacionados a las interacciones. Además es necesario verificar que el usuario este registrado.
