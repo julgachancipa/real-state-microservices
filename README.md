@@ -1,8 +1,8 @@
-# Prueba Técnica para Desarrolladores Backend - Habi
+# Real state properties microservices
 
 ## Introducción
 
-Este proyecto consiste en el desarrollo de dos microservicios que permitirán a los usuarios de Habi consultar los inmuebles disponibles para la venta y, adicionalmente, darles "me gusta" a los inmuebles que les resulten interesantes. Los usuarios podrán aplicar diferentes filtros a sus búsquedas para facilitar la localización de inmuebles específicos y se mantendrá un registro del histórico de "me gusta" por usuario.
+Este proyecto consiste en el desarrollo de dos microservicios que permitirán a los usuarios consultar los inmuebles disponibles para la venta y, adicionalmente, darles "me gusta" a los inmuebles que les resulten interesantes. Los usuarios podrán aplicar diferentes filtros a sus búsquedas para facilitar la localización de inmuebles específicos y se mantendrá un registro del histórico de "me gusta" por usuario.
 
 ## Tecnologías Utilizadas
 
@@ -29,7 +29,7 @@ real-state-microservices
     ├── main.py                 # The entry point of the application.
     ├── requirements.txt        # A text file listing all the Python dependencies required for the project.
     ├── settings.py             # Configuration file for the project.
-    ├── tests.py             # Test cases
+    ├── tests.py                # Test cases
     └── README.md               # The main documentation file for the project.
 ```
 ## Historias de Usuario
@@ -79,7 +79,7 @@ pytest tests.py
 
 Para extender el diagrama de Entidad-Relación original, se propone agregar la tabla `interaction`, esta almacenará las reacciones de los usuarios (me gusta) a las propiedades inmobiliarias permitiendo hacer seguimiento de sus preferencias.
 
-![ER Diagram](./habi_ER.png)
+![ER Diagram](./ER.png)
 
 ### Estructura de la tabla: `interaction`
 
@@ -108,10 +108,10 @@ CREATE TABLE interaction (
 
 ## Preguntas y Resoluciones
 
-2. **Duda**: ¿Qué pasa si hay un resultado de las propiedades con registros incompletos?
+1. **Duda**: ¿Qué pasa si hay un resultado de las propiedades con registros incompletos?
 
 Se devolverá una respuesta parcial con status code `207`, además se indicará qué información de los registros tiene datos incompletos.
 
-1. **Duda**: ¿Debo crear una nueva tabla para almacenar los "me gusta" o puedo agregar una nueva columna a la tabla propiedades para almacenar el número total de "me gusta"?
+2. **Duda**: ¿Debo crear una nueva tabla para almacenar los "me gusta" o puedo agregar una nueva columna a la tabla propiedades para almacenar el número total de "me gusta"?
 
 Se decidió plantear la creación de la tabla `interaction` ya que nos permite identificar qué usuarios estan relacionados a las interacciones. Además es necesario verificar que el usuario este registrado.
