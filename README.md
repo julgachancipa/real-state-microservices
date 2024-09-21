@@ -49,12 +49,33 @@ real-state-microservices
    - Precio de venta
    - Descripción
 
-### Servicio de “Me gusta”
+## Servivcio consulta de propiedades
+
+### Inicializar servicio 
+
+```bash
+cd consulting_ms
+
+# Recuerda crear tu ambiente venv o conda
+pip install -r requirements.txt
+
+python main.py
+```
+
+### Ejecutar pruebas
+
+```bash
+pip install pytest
+
+pytest tests.py
+```
+
+## Servicio de “Me gusta”
 
 1. Los usuarios pueden darle "me gusta" a un inmueble en específico y esto debe quedar registrado en la base de datos.
 2. Los "me gusta" son de usuarios registrados, y debe quedar registrado en la base de datos el histórico de “me gusta” de cada usuario y a cuáles inmuebles.
 
-## Diagrama de Entidad-Relación (Segundo Requerimiento)
+### Diagrama de Entidad-Relación (Segundo Requerimiento)
 
 Para extender el diagrama de Entidad-Relación original, se propone agregar la tabla `interaction`, esta almacenará las reacciones de los usuarios (me gusta) a las propiedades inmobiliarias permitiendo hacer seguimiento de sus preferencias.
 
@@ -83,7 +104,6 @@ CREATE TABLE interaction (
 );
 
 ```
-
 
 
 ## Preguntas y Resoluciones
